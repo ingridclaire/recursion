@@ -20,32 +20,36 @@ var stringifyJSON = function(obj) {
         return '"' + obj[0] + '"]'
       } else if(typeof obj[0] === 'number') {
         return obj[0].toString() + ']'
-        }
-      } else if(obj[1] === 'object' && !Array.isArray(obj[1])) {
-        return stringifyJSON(obj.shift()) + '{' + stringifyJSON(obj);
-      } else if(Array.isArray(obj[1])) {
-        return stringifyJSON(obj.shift()) + ',[' + stringifyJSON(obj);
-      } else {
-        return stringifyJSON(obj.shift()) + ',' + stringifyJSON(obj);;
       }
+    } else if(obj[1] === 'object' && !Array.isArray(obj[1])) {
+      return stringifyJSON(obj.shift()) + '{' + stringifyJSON(obj);
+    } else if(Array.isArray(obj[1])) {
+      return stringifyJSON(obj.shift()) + ',[' + stringifyJSON(obj);
+    } else {
+      return stringifyJSON(obj.shift()) + ',' + stringifyJSON(obj);;
+    }
       
   } else if(typeof obj === 'object' && !Array.isArray(obj)) {
-      let keys = Object.keys(obj)
-      let firstKey = '"' + keys[0] + '":'
-      let firstProp = obj[keys[0]];
-      delete obj[keys[0]]
-      if(keys.length === 1) {
-        if(typeof firstProp === 'string') {
-          return firstKey + '"' + firstProp + '"}';
-        } else if(typeof firstProp === 'number') {
-          return firstKey + firstProp.toString() + '"}'
-        } else {
-          return firstKey + stringifyJSON(firstProp) + '}';
+    let keys = Object.keys(obj)
+    let firstKey = '"' + keys[0] + '":'
+    let firstProp = obj[keys[0]];
+    delete obj[keys[0]]
+    if(keys.length === 1) {
+      if(typeof firstProp === 'string') {
+        return firstKey + '"' + firstProp + '"}';
+      } else if(typeof firstProp === 'number') {
+        return firstKey + firstProp.toString() + '"}'
+      } else {
+        return firstKey + stringifyJSON(firstProp) + '}';
         }
-      }
+    } else if(typeof firstProp === 'object' && !Array.isArray(firstProp)) {
+      return firstKey + '{' + stringifyJSON(firstProp) + ',' + stringifyJSON(obj);
+    } else if(Array.isArray(firstProp)) {
+      return firstKey + '[' + stringifyJSON(firstProp) + ',' + stringifyJSON(obj);
+    } else {
       return firstKey + firstProp + ',' + stringifyJSON(obj);
-    
-  }   
+    }
+  }     
 }
 
 
