@@ -9,65 +9,72 @@ var stringifyJSON = function(obj) {
 		return 'null';
 
 	} else if(typeof obj === 'string') {
-        return '"' + obj + '"'
+      return '"' + obj + '"';
 
-    } else if(typeof obj === 'number') {
-		return obj.toString();
-	}
+  } else if(typeof obj === 'number') {
+		  return obj.toString();
 
-	if(Array.isArray(obj)) {
-		if(obj.length === 1 && typeof obj[0] === 'number') {
-			return '' + obj[0] + ']';
-
-		} else if(obj.length === 1 && typeof obj[0] === 'string') {
-            return '"' + obj[0] + '"' + ']';
-
+	} else if(Array.isArray(obj)) {
+      if(obj.length === 1) {
+        if(typeof obj[0] === 'string') {
+            return '"' + obj[0] + '"]'
+        } else if(typeof obj[0] === 'number') {
+            return obj[0].toString() + ']'
         }
-       return '' + stringifyJSON(obj[0]) + ',' + stringifyJSON(obj.slice(1, obj.length));
-    }
-
-
-  if(typeof obj === 'object' && !Array.isArray(obj)) {
-    for(var key in obj) {
-      var keys = Object.keys(obj)
-
-      if(keys.length === 1 && typeof obj[key] === 'string') {
-        return '"' + keys[0] + '":"' + obj[key] + '"}';
-
-      } else if(keys.length === 1 && typeof obj[key] === 'number') {
-        return '"' + keys[0] + '":' + obj[key] + '}';
+      } else if(obj[1] === 'object' && !Array.isArray(obj[1])) {
+        return stringifyJSON(obj.shift()) + '{' + stringifyJSON(obj);
+      } else if(Array.isArray(obj[1])) {
+        return stringifyJSON(obj.shift()) + ',[' + stringifyJSON(obj);
+      } else {
+        return stringifyJSON(obj.shift()) + ',' + stringifyJSON(obj);;
       }
-
-      let firstKey = keys[0];
-      let firstProp = obj[firstKey];
-      delete obj[firstKey];
-
-      return '"' + firstKey + '":' + stringifyJSON(firstProp) + ',' + stringifyJSON(obj);
-    }
+      
+  } else if(typeof obj === 'object' && !Array.isArray(obj)) {
+      let keys = Object.keys(obj)
+      let firstKey = '"' + keys[0] + '":'
+      let firstProp = obj[keys[0]];
+      delete obj[keys[0]]
+      if(keys.length === 1) {
+        if(typeof firstProp === 'string') {
+          return firstKey + '"' + firstProp + '"}';
+        } else if(typeof firstProp === 'number') {
+          return firstKey + firstProp.toString() + '"}'
+        } else {
+          return firstKey + stringifyJSON(firstProp) + '}';
+        }
+      }
+      return firstKey + firstProp + ',' + stringifyJSON(obj);
+    
   }	  
 }
 
-/*test cases
-var numbers = [1, [2, 3], 4, 5]
+
+
+
+//test cases
+/*var numbers = [1, [2, 3], 4, 5]
 var animals = ['Luna', 'George', 'Severus']
 var songs = {taylorSwift: "Lover", beyonce: {lemonadeAlbum: ["Lemonade", "anotherSong", "anotherOne"]}}
-var rating = {smartNora: 5}
+var rating = {smartNora: 5, dyson: {upright: 4, stick: 5}};
 
 console.log(JSON.stringify(numbers));
-[1,[2,3],4,5]
-
+// [1,[2,3],4,5]
+console.log('-------')
 console.log(stringifyJSON(numbers));
-1,2,3],4,5]
-
+// 1,2,3],4,5]
+console.log('-------')
 console.log(JSON.stringify(animals));
-["Luna","George","Severus"]
-
+// ["Luna","George","Severus"]
+console.log('-------')
 console.log(stringifyJSON(animals));
-"Luna","George","Severus"]
-
+// "Luna","George","Severus"]
+console.log('-------')
 console.log(JSON.stringify(songs));
-{"taylorSwift":"Lover","beyonce":{"lemonadeAlbum":["Lemonade","anotherSong","anotherOne"]}}
-
+// {"taylorSwift":"Lover","beyonce":{"lemonadeAlbum":["Lemonade","anotherSong","anotherOne"]}}
+console.log('-------')
 console.log(stringifyJSON(songs));
-"taylorSwift":"Lover","beyonce":"lemonadeAlbum":"Lemonade","anotherSong","anotherOne"],undefined,undefined
+// "taylorSwift":"Lover","beyonce":"lemonadeAlbum":"Lemonade","anotherSong","anotherOne"],undefined,undefined
+console.log(JSON.stringify(rating));
+console.log('-------')
+console.log(stringifyJSON(rating));
 */
