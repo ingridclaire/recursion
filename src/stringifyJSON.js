@@ -5,21 +5,21 @@
 // var animals = [{Luna: {species: 'dog', favoriteFood: 'bacon'}}, {George: {species: 'cat', favoriteFood: 'tuna'}}]
 //var numbers = [1, 2, 3]
 var stringifyJSON = function(obj) {
-	if(obj === null) {
-		return 'null';
+  if(obj === null) {
+    return 'null';
 
-	} else if(typeof obj === 'string') {
-      return '"' + obj + '"';
+  } else if(typeof obj === 'string') {
+    return '"' + obj + '"';
 
   } else if(typeof obj === 'number') {
-		  return obj.toString();
+    return obj.toString();
 
-	} else if(Array.isArray(obj)) {
-      if(obj.length === 1) {
-        if(typeof obj[0] === 'string') {
-            return '"' + obj[0] + '"]'
-        } else if(typeof obj[0] === 'number') {
-            return obj[0].toString() + ']'
+  } else if(Array.isArray(obj)) {
+    if(obj.length === 1) {
+      if(typeof obj[0] === 'string') {
+        return '"' + obj[0] + '"]'
+      } else if(typeof obj[0] === 'number') {
+        return obj[0].toString() + ']'
         }
       } else if(obj[1] === 'object' && !Array.isArray(obj[1])) {
         return stringifyJSON(obj.shift()) + '{' + stringifyJSON(obj);
@@ -45,7 +45,7 @@ var stringifyJSON = function(obj) {
       }
       return firstKey + firstProp + ',' + stringifyJSON(obj);
     
-  }	  
+  }   
 }
 
 
