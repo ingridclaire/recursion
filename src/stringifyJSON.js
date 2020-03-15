@@ -14,71 +14,57 @@ var stringifyJSON = function(obj) {
   } else if(typeof obj === 'number') {
     return obj.toString();
 
+
   } else if(Array.isArray(obj)) {
-    if(obj.length === 1) {
-      if(typeof obj[0] === 'string') {
-        return '"' + obj[0] + '"]'
-      } else if(typeof obj[0] === 'number') {
-        return obj[0].toString() + ']'
-      }
-    } else if(obj[1] === 'object' && !Array.isArray(obj[1])) {
-      return stringifyJSON(obj.shift()) + '{' + stringifyJSON(obj);
-    } else if(Array.isArray(obj[1])) {
-      return stringifyJSON(obj.shift()) + ',[' + stringifyJSON(obj);
+    if(obj.length === 0) {
+      return ']';
+
+    } else if(obj.length === 1) {
+      return stringifyJSON(obj.shift()).concat(stringifyJSON(obj));
+
     } else {
-      return stringifyJSON(obj.shift()) + ',' + stringifyJSON(obj);;
+      return stringifyJSON(obj.shift()).concat(',', stringifyJSON(obj));
     }
-      
+
+
   } else if(typeof obj === 'object' && !Array.isArray(obj)) {
     let keys = Object.keys(obj)
     let firstKey = '"' + keys[0] + '":'
-    let firstProp = obj[keys[0]];
+    let firstProp = stringifyJSON(obj[keys[0]]);
+
     delete obj[keys[0]]
-    if(keys.length === 1) {
-      if(typeof firstProp === 'string') {
-        return firstKey + '"' + firstProp + '"}';
-      } else if(typeof firstProp === 'number') {
-        return firstKey + firstProp.toString() + '"}'
-      } else {
-        return firstKey + stringifyJSON(firstProp) + '}';
-        }
-    } else if(typeof firstProp === 'object' && !Array.isArray(firstProp)) {
-      return firstKey + '{' + stringifyJSON(firstProp) + ',' + stringifyJSON(obj);
-    } else if(Array.isArray(firstProp)) {
-      return firstKey + '[' + stringifyJSON(firstProp) + ',' + stringifyJSON(obj);
+
+    if (keys.length === 0) {
+      return '}';
+
+    } else if(keys.length === 1) {
+      return firstKey.concat(firstProp, stringifyJSON(obj));
+
     } else {
-      return firstKey + firstProp + ',' + stringifyJSON(obj);
+      return firstKey.concat(firstProp, ',', stringifyJSON(obj));
     }
-  }     
+  }
 }
 
 
-
-
 //test cases
-/*var numbers = [1, [2, 3], 4, 5]
-var animals = ['Luna', 'George', 'Severus']
-var songs = {taylorSwift: "Lover", beyonce: {lemonadeAlbum: ["Lemonade", "anotherSong", "anotherOne"]}}
-var rating = {smartNora: 5, dyson: {upright: 4, stick: 5}};
+/* 
+[expected]
+--------------
+[actual]
 
-console.log(JSON.stringify(numbers));
-// [1,[2,3],4,5]
-console.log('-------')
-console.log(stringifyJSON(numbers));
-// 1,2,3],4,5]
-console.log('-------')
-console.log(JSON.stringify(animals));
-// ["Luna","George","Severus"]
-console.log('-------')
-console.log(stringifyJSON(animals));
-// "Luna","George","Severus"]
-console.log('-------')
-console.log(JSON.stringify(songs));
-// {"taylorSwift":"Lover","beyonce":{"lemonadeAlbum":["Lemonade","anotherSong","anotherOne"]}}
-console.log('-------')
-console.log(stringifyJSON(songs));
-// "taylorSwift":"Lover","beyonce":"lemonadeAlbum":"Lemonade","anotherSong","anotherOne"],undefined,undefined
-console.log(JSON.stringify(rating));
-console.log('-------')
-console.log(stringifyJSON(rating));
+[1,[2,3],4,5]
+-------
+1,2,3],4,5]
+-------
+["Luna","George","Severus"]
+-------
+"Luna","George","Severus"]
+-------
+{"taylorSwift":"Lover","beyonce":{"lemonadeAl
+bum":["Pray You Catch Me","Sorry","Sandcastles"]},"brandiCarlile":"The Joke"}
+-------
+"taylorSwift":"Lover","beyonce":"lemonadeAlbu
+m":"Pray You Catch Me","Sorry","Sandcastles"]
+},"brandiCarlile":"The Joke"}
 */
