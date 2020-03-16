@@ -14,57 +14,49 @@ var stringifyJSON = function(obj) {
   } else if(typeof obj === 'number') {
     return obj.toString();
 
-
   } else if(Array.isArray(obj)) {
-    if(obj.length === 0) {
-      return ']';
-
-    } else if(obj.length === 1) {
-      return stringifyJSON(obj.shift()).concat(stringifyJSON(obj));
-
-    } else {
-      return stringifyJSON(obj.shift()).concat(',', stringifyJSON(obj));
-    }
-
-
+      return '[' + obj.map(element => stringifyJSON(element)) + ']';
+  
   } else if(typeof obj === 'object' && !Array.isArray(obj)) {
     let keys = Object.keys(obj)
-    let firstKey = '"' + keys[0] + '":'
-    let firstProp = stringifyJSON(obj[keys[0]]);
-
-    delete obj[keys[0]]
-
-    if (keys.length === 0) {
-      return '}';
-
-    } else if(keys.length === 1) {
-      return firstKey.concat(firstProp, stringifyJSON(obj));
-
-    } else {
-      return firstKey.concat(firstProp, ',', stringifyJSON(obj));
+    let objString = ''
+    for(var key in obj) {
+      if(key === keys[keys.length-1]) {
+        objString += stringifyJSON(key) + ':' + stringifyJSON(obj[key])
+      } else {
+        objString += stringifyJSON(key) + ':' + stringifyJSON(obj[key]) + ','
+      }
     }
+    return '{' + objString + '}';
   }
 }
 
 
-//test cases
-/* 
-[expected]
---------------
-[actual]
 
-[1,[2,3],4,5]
--------
-1,2,3],4,5]
--------
-["Luna","George","Severus"]
--------
-"Luna","George","Severus"]
--------
-{"taylorSwift":"Lover","beyonce":{"lemonadeAl
-bum":["Pray You Catch Me","Sorry","Sandcastles"]},"brandiCarlile":"The Joke"}
--------
-"taylorSwift":"Lover","beyonce":"lemonadeAlbu
-m":"Pray You Catch Me","Sorry","Sandcastles"]
-},"brandiCarlile":"The Joke"}
-*/
+var assertIsEqual = function(expected, actual) {
+  if(expected === actual) {
+    console.log('test passes');
+  } else {
+    console.log('Test failed: Expected ' + actual + 'to be' + expected)
+  }
+}
+
+
+
+
+//test cases
+
+var numbers = [1, [2, 3], 4, 5]
+var expected1 = JSON.stringify(numbers)
+var actual1 = stringifyJSON(numbers)
+assertIsEqual(expected1, actual1);
+
+var animals = ['Luna', 'George', 'Severus']
+var expected2 = JSON.stringify(animals)
+var actual2 = stringifyJSON(animals)
+assertIsEqual(expected2, actual2);
+
+var songs = {taylorSwift: "Lover", beyonce: {lemonadeAlbum: ["Pray You Catch Me", "Sorry", "Sandcastles"]}, brandiCarlile: 'The Joke'};
+var expected3 = JSON.stringify(songs)
+var actual3 = stringifyJSON(songs)
+assertIsEqual(expected3, actual3);
