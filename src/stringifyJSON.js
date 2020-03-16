@@ -14,10 +14,6 @@ var stringifyJSON = function(obj) {
   } if(typeof obj === 'number' || typeof obj === 'boolean') {
     return obj.toString();
 
-  // } if(typeof obj === 'function') {
-  //   return '';
-
-
   } if(Array.isArray(obj)) {
       return '[' + obj.map(element => stringifyJSON(element)) + ']';
   
